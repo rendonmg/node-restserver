@@ -1,5 +1,8 @@
 require('./config/config');
+
 const express = require("express");
+const mongoose = require('mongoose');
+
 const app = express();
 const bodyParser = require('body-parser');
 //boby-parser procesa la información del POST (la que se envía al servidor)
@@ -12,49 +15,12 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
+app.use(require('./routes/usuario'));
 
-app.get('/', function(req, res) {
-    //res.send('Hello world');
-    res.json('Hello world');
+mongoose.connect(process.env.URLDB, (err, res) => {
+    if (err) throw err;
+    console.log('Base de datos ONLINE');
 });
-
-
-app.get('/usuario', function(req, res) {
-    res.json('Get usuario');
-});
-
-app.post('/usuario', function(req, res) {
-    let bod = req.body;
-
-    if (bod.nombre === undefined) {
-        res.status(400).json({
-            ok: false,
-            mensaje: 'El nombre es necesario'
-        });
-    } else {
-        res.json({
-            persona: bod
-        });
-    }
-
-
-});
-
-app.put('/usuario', function(req, res) {
-    res.json('Put usuario');
-});
-
-app.put('/usuario/:id', function(req, res) {
-    let myId = req.params.id; //Este texto 'id' debe coincidir con el de /usuario/:id
-    res.json({
-        id: myId
-    });
-});
-
-app.delete('/usuario', function(req, res) {
-    res.json('Delete usuario');
-});
-
 
 app.listen(process.env.PORT, () => {
     console.log('Escuchando puerto ', process.env.PORT);
