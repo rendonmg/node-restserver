@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const _ = require('underscore');
 
 const Usuario = require('../models/usuario');
+const { verificaToken, verificaAdmin_Role } = require('../middlewares/autenticacion'); //recordar: destructuración
 
 const app = express();
 
@@ -13,9 +14,18 @@ app.get('/', function(req, res) {
     res.json('Hello world');
 });
 
+//app.get(ruta, middleware(opcional), callback)
+app.get('/usuario', verificaToken, function(req, res) {
 
-app.get('/usuario', function(req, res) {
-    //res.json('Get usuario');
+    // //sólo para verificar que después de pasar por el middleware
+    // //se tiene dentro del req toda la información del usuario, que es un usuario válido
+    // //porque es lo que ya comprobamos en el middleware
+    // // IMPORTANTE, por ejemplo, acá se podría extraer el tipo de usuario para decidir si puede o no eliminar, crear, editar, etc
+    // return res.json({
+    //     usuario: req.usuario,
+    //     nombre: req.usuario.nombre,
+    //     email: req.usuario.email
+    // });
 
     //los parámetros opcionales van en req.query
     let desde = req.query.desde || 0;
@@ -47,7 +57,7 @@ app.get('/usuario', function(req, res) {
         });
 });
 
-app.post('/usuario', function(req, res) {
+app.post('/usuario', [verificaToken, verificaAdmin_Role], function(req, res) {
     let bod = req.body;
 
     //crea una nueva instancia de usuarioSchema con todas sus propiedades
@@ -80,11 +90,11 @@ app.post('/usuario', function(req, res) {
     });
 });
 
-app.put('/usuario', function(req, res) {
+app.put('/usuario', verificaToken, function(req, res) {
     res.json('Put usuario');
 });
 
-app.put('/usuario/:id', function(req, res) {
+app.put('/usuario/:id', [verificaToken, verificaAdmin_Role], function(req, res) {
     let myId = req.params.id; //Este texto 'id' debe coincidir con el de /usuario/:id
     //let myBody = req.body;
 
@@ -115,7 +125,7 @@ app.put('/usuario/:id', function(req, res) {
     })
 });
 
-app.delete('/usuario/:id', function(req, res) {
+app.delete('/usuario/:id', [verificaToken, verificaAdmin_Role], function(req, res) {
     let id = req.params.id;
     let cambiaEstado = {
         estado: false
