@@ -2,6 +2,7 @@ require('./config/config');
 
 const express = require("express");
 const mongoose = require('mongoose');
+const path = require('path');
 
 const app = express();
 const bodyParser = require('body-parser');
@@ -14,6 +15,12 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 // parse application/json
 app.use(bodyParser.json())
+
+
+//habilitar la carpeta public (middleware para hacer público el directorio)
+//app.use(express.statis(__dirname + '../public')); //este no funciona, probarlo con un console.log(__dirname + '../public')
+//se debe usar path
+app.use(express.static(path.resolve(__dirname, '../public')));
 
 //configuración global de rutas
 app.use(require('./routes/index.js'));
