@@ -40,7 +40,7 @@ let verificaToken = (req, res, next) => {
 
 let verificaAdmin_Role = (req, res, next) => {
     let usuario = req.usuario;
-
+    //console.log(req.usuario);
     // if (err) {
     //     return res.status(401).json({
     //         ok: false,
