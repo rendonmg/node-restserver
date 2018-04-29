@@ -63,7 +63,35 @@ let verificaAdmin_Role = (req, res, next) => {
 
 };
 
+//===================
+//Verificar token img
+//===================
+let verificaTokenImg = (req, res, next) => {
+    let token = req.query.tok;
+    jwt.verify(token, process.env.SEED, (err, decoded) => {
+        //si sale algo mal, es decir, si hay error, por ejemplo, si el token expiró
+        //esta información quedaría almacenada en el err
+        //de lo contrario tenemos la respuesta en decoded
+        if (err) {
+            return res.status(401).json({
+                ok: false,
+                err
+                // err: {
+                //     message: 'Token no válido'
+                // }
+            });
+        }
+
+        //decoded es todo el payload, lo pasamos al request, para saber qué usuario está autenticándose
+        req.usuario = decoded.usuario;
+        //console.log('pruega');
+        next();
+
+    });
+}
+
 module.exports = {
     verificaToken,
-    verificaAdmin_Role
+    verificaAdmin_Role,
+    verificaTokenImg
 }
